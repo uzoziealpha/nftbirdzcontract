@@ -2,10 +2,11 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 import './ERC721.sol';
+import './interfaces/IERC721Enumerable.sol';
 
 
 
-contract ERC721Enumerable is ERC721{
+contract ERC721Enumerable is IERC721Enumerable, ERC721{
 
     uint256[] private _allTokens;
     
@@ -64,7 +65,7 @@ contract ERC721Enumerable is ERC721{
     }
 
    // returns total suply of all the _all tokens arrsy 
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() public override view returns (uint256) {
         return _allTokens.length;
     }
 

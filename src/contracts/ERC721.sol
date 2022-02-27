@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
+import './ERC165.sol';
+import './interfaces/IERC721.sol';
+
 //building the mint function to create NFT
 /**
     to keep the address
@@ -22,7 +25,7 @@ pragma solidity >=0.4.22 <0.9.0;
     4. Increase the owner token count by 1 each time the function is called.
   */
 
-contract ERC721 {
+contract ERC721 is ERC165, IERC721 {
   
    //we create an even to keep track of the transfer and logs 
    //this helps save gas as well
@@ -31,7 +34,12 @@ contract ERC721 {
        address indexed to, 
        uint256 indexed tokenId);
    
-
+   event Approval (
+     address indexed owner,
+     address indexed approved,
+     uint256 indexed tokenId);
+   
+   
 
 
     //,mapping in solididty creates a hash table of pair values 
@@ -43,15 +51,26 @@ contract ERC721 {
     mapping(uint256 => address) private _tokenOwner;
    //create mapping from owner to number of owned tokens 
     mapping(address => uint256) private _OwnedTokensCount;
-  //create mapping to keep track for approved addresses
-  mapping(uint256 => address) private _tokenApproval;
+   //create mapping to keep track for approved addresses
+    mapping(uint256 => address) private _tokenApprovals;
 
+  //***************************
+  
+  //************************ */
+      
+    //Create constructor to register interface for the erc721 contract so that it includes
+    // some functions: balanceOf, owwnerOf , transferFrom
 
+    //Register the interface for the ERC721Enumerable contract so that it includes
+    //Supply, tokenByIndex , tokenOfOwnersByIndex 
 
- ///   @notice Count all NFTs assigned to an Owner
- ///   @dev
- ///   @param _owner The address of who we query the balance
- ///   @return
+    //Register the inteeface for the ERC721Metadata contract so that includes 
+    //name and symbol functions.
+       constructor () {
+       _registerInterface(bytes4(keccak256('supportedInterfaces(bytes)')^
+       keccak256('ownerOf(bytes4)')^keccak256('transferFrom(bytes4')));
+      }
+
   
    function balanceOf(address _owner) public view returns(uint256) {
      require(_owner != address(0), 'Token does not exist');
@@ -136,9 +155,27 @@ contract ERC721 {
     }
 
     function transferFrom(address _from, address _to, uint256 _tokenId) public {
+        require(isApprovedOrOwner(msg.sender, _tokenId));
         _transferFrom(_from, _to, _tokenId);
     }
 
+//we want to approve an Id or tokenID
+//we want to be sure the person approving is the owner
+//use mapping to update the map of the approval addresses
+    function approve(address _to, uint256 tokenId) public {
+        address owner = ownerOf(tokenId);
+        require(_to != owner, 'Error - approval to current owner');
+        require(msg.sender == owner, 'Current Caller is not the owner of the token');
+        _tokenApprovals[tokenId] = _to;
+        emit Approval(owner, _to, tokenId);
+    }
+
+     function isApprovedOrOwner (address spender , uint256 tokenId) internal {
+       return(_exists(tokenId), 'Token does not exist');
+       address owner = ownerOf(tokenId);
+       return(spender == owner);
+
+     }
 }
 
 
