@@ -88,7 +88,7 @@ contract ERC721 {
 
        //MINTING function makes the owner get a specific id 
 
-      function _mint(address to, uint256 tokenId) internal {
+      function _mint(address to, uint256 tokenId) internal virtual {
         //making the address to a specifc address not invalid
         require(to != address(0),'ERC721: minting to the zero address');
         //this will make sure that if it already exist return message
