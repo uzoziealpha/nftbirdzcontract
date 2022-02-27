@@ -41,9 +41,39 @@ contract ERC721 {
   // create mapping  token ID to the owner 
   //unit - is the calculation of bit so 
     mapping(uint256 => address) private _tokenOwner;
-
-    //create mapping from owner to number of owned tokens 
+   //create mapping from owner to number of owned tokens 
     mapping(address => uint256) private _OwnedTokensCount;
+    
+
+
+
+ ///   @notice Count all NFTs assigned to an Owner
+ ///   @dev
+ ///   @param _owner The address of who we query the balance
+ ///   @return
+  
+   function balanceOf(address _owner) public view returns(uint256) {
+     require(_owner != address(0), 'Token does not exist');
+     return _OwnedTokensCount[_owner];
+   } 
+
+
+ ///   @notice Finding the Owner of an NFT
+ ///   @dev
+ ///   @param _tokenId the id for an NFT
+ ///   @return
+
+     function ownerOf(uint256 _tokenId) external view returns(address) {
+       //this address stores the owner mapping it out with the ID
+       address owner = _tokenOwner[_tokenId];
+       require(owner != address(0), 'Owner does not exist');
+       return owner;
+}
+
+
+   
+
+
 
 
   //Write a function called _mint that takes two arguments
