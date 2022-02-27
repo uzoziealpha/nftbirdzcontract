@@ -23,6 +23,17 @@ pragma solidity >=0.4.22 <0.9.0;
   */
 
 contract ERC721 {
+  
+   //we create an even to keep track of the transfer and logs 
+   //this helps save gas as well
+   event Transfer(
+       address indexed from, 
+       address indexed to, 
+       uint256 indexed tokenId);
+   
+
+
+
     //,mapping in solididty creates a hash table of pair values 
     //to keep track and setting the token 
 
@@ -37,7 +48,7 @@ contract ERC721 {
 
   //Write a function called _mint that takes two arguments
   
-       //function to check if the token ID already exists
+       //NFT EXIST function to check if the token ID already exists
      function _exists(uint256 tokenId) internal view returns(bool) {
             //setting address of nft owner to check the address of the tokenOwner at the tokenId
            address owner = _tokenOwner[tokenId];
@@ -45,7 +56,7 @@ contract ERC721 {
            return owner != address(0);
        }
 
-//this function makes the owner get a specific id 
+       //MINTING function makes the owner get a specific id 
 
       function _mint(address to, uint256 tokenId) internal {
         //making the address to a specifc address not invalid
@@ -57,6 +68,10 @@ contract ERC721 {
    //     _OwnedTokensCount [to] = _OwnedTokensCount[to] + 1; 
     //this helps to keep track of the minting and adding 1 to the count. 
         _OwnedTokensCount[to] += 1;
+
+
+        //event emitter for transfering
+        emit Transfer(address(0), to, tokenId);
     }
 }
 
